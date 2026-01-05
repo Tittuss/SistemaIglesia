@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,7 +7,9 @@ using System.Threading.Tasks;
 
 namespace Infraestructure.Data
 {
-    internal class AppDbContext
+    public class AppDbContext
     {
+        public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) 
+        { }
     }
 }
