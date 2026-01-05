@@ -20,7 +20,7 @@ namespace Infraestructure.Data
         public DbSet<AcademicPeriod> AcademicPeriods { get; set; }
         public DbSet<Director> Directors { get; set; }
 
-        public override void OnModelCreating(ModelBuilder modelBuilder)
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
