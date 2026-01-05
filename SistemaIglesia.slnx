@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="Application/Application.csproj" />
+  <Project Path="Domain/Domain.csproj" />
+  <Project Path="Infraestructure/Infraestructure.csproj" />
+  <Project Path="SistemaIglesia/SistemaIglesia.csproj" />
+  <Project Path="WebApi/WebApi.csproj" />
+</Solution>
