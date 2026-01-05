@@ -11,7 +11,7 @@ namespace Domain.Interfaces
         Task<T?> GetValueAsync(Guid id);
         Task<IEnumerable<T>> GetAllAsync();
         Task AddAsync(T entity);
-        Task Update(T entity);
-        Task Delete(T entity);
+        void Update(T entity);
+        void Delete(T entity);
     }
 }
