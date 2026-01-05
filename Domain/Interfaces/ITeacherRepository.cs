@@ -7,9 +7,8 @@ using System.Threading.Tasks;
 
 namespace Domain.Interfaces
 {
-    public interface IStudentRepository : IGenericRepository<Student>
+    public interface ITeacherRepository : IGenericRepository<Teacher>
     {
-        // Buscar por correo
-        Task<Student?> GetByEmailAsync(string email);
+        Task<Teacher?> GetByEmailAsync(string email);
     }
 }
