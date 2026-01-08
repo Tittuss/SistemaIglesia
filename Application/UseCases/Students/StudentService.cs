@@ -22,6 +22,18 @@ namespace Application.UseCases.Students
 
         public async Task<IEnumerable<CourseGradeDto>> GetMyGradesAsync(Guid studentId)
         {
+            var student = await _unitOfWork.Students.GetByIdAsync(studentId);
+            
+            if (student == null)
+            {
+                throw new KeyNotFoundException($"El estudiante con ID {studentId} no existe.");
+            }
+            
+            if (!student.IsActive)
+            {
+                throw new UnauthorizedAccessException("El usuario está inactivo. Contacte a administración.");
+            }
+            
             var enrollments = await _unitOfWork.Enrollments.GetByStudentIdAsync(studentId);
             return _mapper.Map<IEnumerable<CourseGradeDto>>(enrollments);
         }
