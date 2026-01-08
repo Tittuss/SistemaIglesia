@@ -22,18 +22,32 @@ namespace Application.UseCases.Teachers
 
         public async Task<IEnumerable<CourseSimpleDto>> GetAssignedCoursesAsync(Guid teacherId)
         {
+            var teacher = await _unitOfWork.Teachers.GetByIdAsync(teacherId);
+            if (teacher == null)
+            {
+                throw new KeyNotFoundException($"El docente con ID {teacherId} no existe.");
+            }
             var courses = await _unitOfWork.Courses.GetCoursesByTeacherIdAsync(teacherId);
             return _mapper.Map<IEnumerable<CourseSimpleDto>>(courses);
         }
 
         public async Task<IEnumerable<StudentGradeDto>> GetStudentsByCourseAsync(Guid courseId)
         {
-            var enrollments = await _unitOfWork.Enrollments.GetByCourseIdAsync(courseId);
+            var course = await _unitOfWork.Courses.GetByIdAsync(courseId);
+            if (course == null) throw new KeyNotFoundException("El curso solicitado no existe."); var enrollments = await _unitOfWork.Enrollments.GetByCourseIdAsync(courseId);
             return _mapper.Map<IEnumerable<StudentGradeDto>>(enrollments);
         }
 
         public async Task UpdateStudentGradeAsync(UpdateGradeDto dto)
         {
+            if (dto.NewGrade < 0 || dto.NewGrade > 100)
+            {
+                throw new ArgumentException("La nota debe estar entre 0 y 100.");
+            }
+
+            var course = await _unitOfWork.Courses.GetByIdAsync(dto.CourseId);
+            if (course == null) throw new KeyNotFoundException("Curso no encontrado.");
+
             var enrollments = await _unitOfWork.Enrollments.GetByCourseIdAsync(dto.CourseId);
             var targetEnrollment = enrollments.FirstOrDefault(e => e.StudentId == dto.StudentId);
 
