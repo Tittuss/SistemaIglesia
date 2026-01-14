@@ -31,9 +31,10 @@ namespace Application.UseCases.Director
         Task<CourseDto> GetCourseByIdAsync(Guid id);
 
         // Inscripciones
-        Task<IEnumerable<EnrollmentDto>> GetAllEnrollmentAsync();
+        Task<IEnumerable<EnrollmentDto>> GetAllEnrollmentsAsync();
         Task<EnrollmentDto> CreateEnrollmentAsync(CreateEnrollmentDto dto);
         Task DeleteEnrollmentAsync(Guid id);
         Task<EnrollmentDto> GetEnrollmentByIdAsync(Guid id);
+
     }
 }

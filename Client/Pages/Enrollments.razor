@@ -1,0 +1,49 @@
+﻿@page "/enrollments"
+@using Client.ViewModels
+@inject IEnrollmentViewModel ViewModel
+
+<h3>Inscripciones</h3>
+
+<div class="mb-3">
+    <a href="/enrollments/create" class="btn btn-success">Nueva Inscripción</a>
+</div>
+
+@if (ViewModel.IsLoading)
+{
+    <p>Cargando...</p>
+}
+else
+{
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th>Estudiante</th>
+                <th>Curso</th>
+                <th>Nota Final</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in ViewModel.Enrollments)
+            {
+                <tr>
+                    <td>@item.StudentName</td>
+                    <td>@item.CourseName</td>
+                    <td>
+                        @(item.FinalGrade.HasValue? item.FinalGrade.Value.ToString() : "Sin Calificar")
+                    </td>
+                    <td>
+                        <button class="btn btn-danger btn-sm" @onclick="() => ViewModel.DeleteAsync(item.Id)">Dar de Baja</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        await ViewModel.LoadEnrollmentsAsync();
+    }
+}

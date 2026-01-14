@@ -7,21 +7,39 @@
     </div>
 </div>
 
-<div class="@NavMenuCssClass nav-scrollable" @onclick="ToggleNavMenu">
-    <nav class="nav flex-column">
+<div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
+    <nav class="flex-column">
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
+                <span class="oi oi-home" aria-hidden="true"></span> Inicio
             </NavLink>
         </div>
+
+        <div class="nav-item px-3 mt-2">
+            <span class="text-light small text-uppercase fw-bold ms-3">Administración</span>
+        </div>
+
         <div class="nav-item px-3">
-            <NavLink class="nav-link" href="counter">
-                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Counter
+            <NavLink class="nav-link" href="students">
+                <span class="oi oi-people" aria-hidden="true"></span> Estudiantes
             </NavLink>
         </div>
+
         <div class="nav-item px-3">
-            <NavLink class="nav-link" href="weather">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Weather
+            <NavLink class="nav-link" href="teachers">
+                <span class="oi oi-briefcase" aria-hidden="true"></span> Docentes
+            </NavLink>
+        </div>
+
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="courses">
+                <span class="oi oi-book" aria-hidden="true"></span> Cursos
+            </NavLink>
+        </div>
+
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="enrollments">
+                <span class="oi oi-list-rich" aria-hidden="true"></span> Inscripciones
             </NavLink>
         </div>
     </nav>

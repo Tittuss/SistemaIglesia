@@ -203,9 +203,9 @@ namespace Application.UseCases.Director
         #endregion
 
         #region Inscripciones
-        public async Task<IEnumerable<EnrollmentDto>> GetAllEnrollmentAsync()
+        public async Task<IEnumerable<EnrollmentDto>> GetAllEnrollmentsAsync()
         {
-            var enrollments = await _unitOfWork.Enrollments.GetAllAsync();
+            var enrollments = await _unitOfWork.Enrollments.GetAllWithDetailsAsync();
             return _mapper.Map<IEnumerable<EnrollmentDto>>(enrollments);
         }
         public async Task<EnrollmentDto> CreateEnrollmentAsync(CreateEnrollmentDto dto)
