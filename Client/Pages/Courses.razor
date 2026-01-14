@@ -1,0 +1,48 @@
+﻿@page "/courses"
+@using Client.ViewModels
+@inject ICourseViewModel ViewModel
+
+<h3>Gestión de Cursos</h3>
+
+<div class="mb-3">
+    <a href="/courses/create" class="btn btn-success">Nuevo Curso</a>
+</div>
+
+@if (ViewModel.IsLoading)
+{
+    <p>Cargando...</p>
+}
+else
+{
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th>Curso</th>
+                <th>Descripción</th>
+                <th>Profesor Asignado</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var course in ViewModel.Courses)
+            {
+                <tr>
+                    <td>@course.Name</td>
+                    <td>@course.Description</td>
+                    <td>@course.TeacherName</td>
+                    <td>
+                        <a href="/courses/edit/@course.Id" class="btn btn-primary btn-sm">Editar</a>
+                        <button class="btn btn-danger btn-sm" @onclick="() => ViewModel.DeleteAsync(course.Id)">Eliminar</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        await ViewModel.LoadCoursesAsync();
+    }
+}

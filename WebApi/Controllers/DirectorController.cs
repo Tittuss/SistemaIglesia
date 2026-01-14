@@ -146,12 +146,6 @@ namespace WebApi.Controllers
             return NoContent();
         }
 
-        [HttpGet("courses")]
-        public async Task<IActionResult> GetAllEnrollments()
-        {
-            return Ok(await _directorService.GetAllEnrollmentAsync());
-        }
-
         [HttpPost("enrollments")]
         public async Task<ActionResult<EnrollmentDto>> CreateEnrollment(CreateEnrollmentDto dto)
         {

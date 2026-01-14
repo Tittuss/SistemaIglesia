@@ -140,7 +140,7 @@ namespace Application.UseCases.Director
         #region Curso
         public async Task<IEnumerable<CourseDto>> GetAllCoursesAsync()
         {
-            var courses = await _unitOfWork.Courses.GetAllAsync();
+            var courses = await _unitOfWork.Courses.GetAllWithDetailsAsync();
             return _mapper.Map<IEnumerable<CourseDto>>(courses);
         }
 

@@ -14,5 +14,6 @@ namespace Domain.Interfaces
 
         // Obtener detalle del curso
         Task<Course?> GetCourseWithDetailsAsync(Guid courseId);
+        Task<IEnumerable<Course>> GetAllWithDetailsAsync();
     }
 }

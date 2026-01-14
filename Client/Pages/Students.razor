@@ -1,33 +1,38 @@
 ﻿@page "/students"
-@using Shared.DTOs
-@inject HttpClient Http
+@using Client.ViewModels
+@inject IStudentViewModel ViewModel
 
 <h3>Gestión de Estudiantes</h3>
 
-@if (students == null)
+<div class="mb-3">
+    <a href="/students/create" class="btn btn-success">Nuevo Estudiante</a>
+</div>
+
+@if (ViewModel.IsLoading)
 {
-    <p><em>Cargando...</em></p>
+    <p>Cargando...</p>
 }
 else
 {
-    <table class="table">
+    <table class="table table-striped">
         <thead>
             <tr>
                 <th>Nombre</th>
                 <th>Email</th>
-                <th>Activo</th>
+                <th>Estado</th>
                 <th>Acciones</th>
             </tr>
         </thead>
         <tbody>
-            @foreach (var student in students)
+            @foreach (var student in ViewModel.Students)
             {
                 <tr>
                     <td>@student.FirstName @student.LastName</td>
                     <td>@student.Email</td>
-                    <td>@(student.IsActive ? "Sí" : "No")</td>
+                    <td>@(student.IsActive ? "Activo" : "Inactivo")</td>
                     <td>
-                        <button class="btn btn-primary btn-sm">Editar</button>
+                        <a href="/students/edit/@student.Id" class="btn btn-primary btn-sm">Editar</a>
+                        <button class="btn btn-danger btn-sm" @onclick="() => ViewModel.DeleteAsync(student.Id)">Eliminar</button>
                     </td>
                 </tr>
             }
@@ -36,11 +41,8 @@ else
 }
 
 @code {
-    private IEnumerable<StudentDto>? students;
-
     protected override async Task OnInitializedAsync()
     {
-        // Aquí reutilizamos el DTO que movimos a Shared
-        students = await Http.GetFromJsonAsync<IEnumerable<StudentDto>>("api/director/students");
+        await ViewModel.LoadStudentsAsync();
     }
 }

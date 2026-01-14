@@ -44,7 +44,10 @@ namespace Application.Mapping
             // Curso
             CreateMap<CreateCourseDto, Course>();
             CreateMap<Course, CourseDto>()
-                .ForMember(dest => dest.TeacherName, opt => opt.MapFrom(src => $"{src.Teacher.FirstName} {src.Teacher.LastName}"));
+    .ForMember(dest => dest.TeacherName, opt => opt.MapFrom(src =>
+        src.Teacher != null
+            ? $"{src.Teacher.FirstName} {src.Teacher.LastName}"
+            : "Sin Docente Asignado"));
 
             // Inscripciones
             CreateMap<CreateEnrollmentDto, Enrollment>();
