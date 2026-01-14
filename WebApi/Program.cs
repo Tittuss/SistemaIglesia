@@ -1,15 +1,16 @@
 
 using Application.Mapping;
+using Application.UseCases.Director;
 using Application.UseCases.Students;
 using Application.UseCases.Teachers;
+using AutoMapper;
 using Domain.Interfaces;
 using Infraestructure.Data;
 using Infraestructure.Repositories;
+using Microsoft.AspNetCore.OpenApi;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.AspNetCore.OpenApi;
 using Swashbuckle.AspNetCore.SwaggerGen;
-using AutoMapper;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,6 +27,7 @@ builder.Services.AddScoped<ITeacherRepository, TeacherRepository>();
 
 builder.Services.AddScoped<ITeacherService, TeacherService>();
 builder.Services.AddScoped<IStudentService, StudentService>();
+builder.Services.AddScoped<IDirectorService, DirectorService>();
 
 builder.Services.AddAutoMapper(typeof(MappingProfile).Assembly);
 

@@ -31,6 +31,11 @@ namespace Application.Mapping
                     $"{src.Student!.FirstName} {src.Student!.LastName}"))
                 .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Student!.Email))
                 .ForMember(dest => dest.CurrentGrade, opt => opt.MapFrom(src => src.FinalGrade));
+            
+            // Estudiante
+            CreateMap<CreateStudentDto, Student>();
+            CreateMap<Student, StudentDto>();
+            CreateMap<UpdateStudentDto, Student>();
         }
     }
 }
