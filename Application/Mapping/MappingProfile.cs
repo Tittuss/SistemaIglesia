@@ -31,6 +31,27 @@ namespace Application.Mapping
                     $"{src.Student!.FirstName} {src.Student!.LastName}"))
                 .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Student!.Email))
                 .ForMember(dest => dest.CurrentGrade, opt => opt.MapFrom(src => src.FinalGrade));
+            
+            // Estudiante
+            CreateMap<CreateStudentDto, Student>();
+            CreateMap<Student, StudentDto>();
+            CreateMap<UpdateStudentDto, Student>();
+
+            // Docente
+            CreateMap<CreateTeacherDto, Teacher>();
+            CreateMap<Teacher, TeacherDto>();
+
+            // Curso
+            CreateMap<CreateCourseDto, Course>();
+            CreateMap<Course, CourseDto>()
+                .ForMember(dest => dest.TeacherName, opt => opt.MapFrom(src => $"{src.Teacher.FirstName} {src.Teacher.LastName}"));
+
+            // Inscripciones
+            CreateMap<CreateEnrollmentDto, Enrollment>();
+
+            CreateMap<Enrollment, EnrollmentDto>()
+                .ForMember(dest => dest.StudentName, opt => opt.MapFrom(src => $"{src.Student.FirstName} {src.Student.LastName}"))
+                .ForMember(dest => dest.CourseName, opt => opt.MapFrom(src => src.Course.Name));
         }
     }
 }
