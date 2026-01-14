@@ -21,6 +21,7 @@ namespace Application.UseCases.Director
             _mapper = mapper;
         }
 
+        #region Estudiante
         public async Task<StudentDto> CreateStudentAsync(CreateStudentDto dto)
         {
             var existingStudent = await _unitOfWork.Students.GetByEmailAsync(dto.Email);
@@ -69,5 +70,120 @@ namespace Application.UseCases.Director
 
             await _unitOfWork.SaveAsync();
         }
+
+        public async Task<StudentDto> GetStudentByIdAsync(Guid id)
+        {
+            var student = await _unitOfWork.Students.GetByIdAsync(id);
+            if (student == null) throw new KeyNotFoundException("Estudiante no encontrado");
+            return _mapper.Map<StudentDto>(student);
+        }
+
+        #endregion
+
+        #region Docente
+        public async Task<TeacherDto> CreateTeacherAsync(CreateTeacherDto dto)
+        {
+            var existingTeacher = await _unitOfWork.Students.GetByEmailAsync(dto.Email);
+            if (existingTeacher != null)
+            {
+                throw new ArgumentException($"El correo {dto.Email} ya está registrado en el sistema.");
+            }
+
+            var teacher = _mapper.Map<Teacher>(dto);
+            teacher.Id = Guid.NewGuid();
+
+            await _unitOfWork.Teachers.AddAsync(teacher);
+            await _unitOfWork.SaveAsync();
+
+            return _mapper.Map<TeacherDto>(teacher);
+        }
+
+        public async Task UpdateTeacherAsync(UpdateTeacherDto dto)
+        {
+            var teacher = await _unitOfWork.Teachers.GetByIdAsync(dto.Id);
+            if (teacher == null) throw new KeyNotFoundException("Docente no encontrado");
+
+            teacher.FirstName = dto.FirstName;
+            teacher.LastName = dto.LastName;
+
+            _unitOfWork.Teachers.Update(teacher);
+            await _unitOfWork.SaveAsync();
+        }
+
+        public async Task DeleteTeacherAsync(Guid id)
+        {
+            var teacher = await _unitOfWork.Teachers.GetByIdAsync(id);
+            if (teacher == null) throw new KeyNotFoundException("Docente no encontrado");
+
+            _unitOfWork.Teachers.Delete(teacher);
+            await _unitOfWork.SaveAsync();
+        }
+
+        public async Task<TeacherDto> GetTeacherByIdAsync(Guid id)
+        {
+            var teacher = await _unitOfWork.Teachers.GetByIdAsync(id);
+            if (teacher == null) throw new KeyNotFoundException("Docente no encontrado");
+            return _mapper.Map<TeacherDto>(teacher);
+        }
+        #endregion
+
+        #region Curso
+        public async Task<CourseDto> CreateCourseAsync(CreateCourseDto dto)
+        {
+            var teacher = await _unitOfWork.Teachers.GetByIdAsync(dto.TeacherId);
+            if (teacher == null) throw new ArgumentException("El profesor asignado no existe");
+
+            var course = _mapper.Map<Course>(dto);
+            course.Id = Guid.NewGuid();
+
+            course.AcademicPeriodId = dto.AcademicPeriodId;
+
+            await _unitOfWork.Courses.AddAsync(course);
+            await _unitOfWork.SaveAsync();
+
+            course.Teacher = teacher;
+            return _mapper.Map<CourseDto>(course);
+        }
+
+        public async Task UpdateCourseAsync(UpdateCourseDto dto)
+        {
+            var course = await _unitOfWork.Courses.GetByIdAsync(dto.Id);
+            if (course == null) throw new KeyNotFoundException("Curso no encontrado");
+
+            // Validar que el nuevo profesor exista
+            if (course.TeacherId != dto.TeacherId)
+            {
+                var teacher = await _unitOfWork.Teachers.GetByIdAsync(dto.TeacherId);
+                if (teacher == null) throw new ArgumentException("El nuevo profesor no existe");
+                course.TeacherId = dto.TeacherId;
+            }
+
+            course.Name = dto.Name;
+            course.Description = dto.Description;
+
+            _unitOfWork.Courses.Update(course);
+            await _unitOfWork.SaveAsync();
+        }
+
+        public async Task DeleteCourseAsync(Guid id)
+        {
+            var course = await _unitOfWork.Courses.GetByIdAsync(id);
+            if (course == null) throw new KeyNotFoundException("Curso no encontrado");
+
+            _unitOfWork.Courses.Delete(course);
+            await _unitOfWork.SaveAsync();
+        }
+
+        public async Task<CourseDto> GetCourseByIdAsync(Guid id)
+        {
+            var course = await _unitOfWork.Courses.GetByIdAsync(id);
+            if (course == null) throw new KeyNotFoundException("Curso no encontrado");
+
+            if (course.Teacher == null)
+                course.Teacher = await _unitOfWork.Teachers.GetByIdAsync(course.TeacherId);
+
+            return _mapper.Map<CourseDto>(course);
+        }
+        #endregion
     }
 }

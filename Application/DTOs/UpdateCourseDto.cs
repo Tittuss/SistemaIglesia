@@ -7,15 +7,12 @@ using System.Threading.Tasks;
 
 namespace Application.DTOs
 {
-    public class CreateCourseDto
+    public class UpdateCourseDto
     {
         [Required]
+        public Guid Id { get; set; }
         public string Name { get; set; }
-        [Required]
         public string Description { get; set; }
-        [Required]
-        public Guid TeacherId { get; set; }
-        [Required]
-        public Guid AcademicPeriodId { get; set; }
+        public Guid TeacherId { get; set; } // Permitimos cambiar al profesor
     }
 }

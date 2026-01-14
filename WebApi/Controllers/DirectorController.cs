@@ -58,9 +58,75 @@ namespace WebApi.Controllers
         }
 
         [HttpGet("students/{id}")]
-        public IActionResult GetStudentById(Guid id)
+        public async Task<IActionResult> GetStudentById(Guid id)
         {
-            return Ok();
+            var student = await _directorService.GetStudentByIdAsync(id);
+            return Ok(student);
+        }
+
+
+        [HttpPost("teachers")]
+        public async Task<ActionResult<TeacherDto>> CreateTeacher(CreateTeacherDto dto)
+        {
+            var result = await _directorService.CreateTeacherAsync(dto);
+            return CreatedAtAction(nameof(GetTeacherById), new { id = result.Id }, result);
+        }
+
+        [HttpGet("teachers/{id}")]
+        public async Task<IActionResult> GetTeacherById(Guid id)
+        {
+            var result = await _directorService.GetTeacherByIdAsync(id);
+            return Ok(result);
+        }
+
+        [HttpPut("teachers")]
+        public async Task<IActionResult> UpdateTeacher(UpdateTeacherDto dto)
+        {
+            await _directorService.UpdateTeacherAsync(dto);
+            return NoContent();
+        }
+
+        [HttpDelete("teachers/{id}")]
+        public async Task<IActionResult> DeleteTeacher(Guid id)
+        {
+            await _directorService.DeleteTeacherAsync(id);
+            return NoContent();
+        }
+
+        [HttpPost("courses")]
+        public async Task<ActionResult<CourseDto>> CreateCourse(CreateCourseDto dto)
+        {
+            try
+            {
+                var result = await _directorService.CreateCourseAsync(dto);
+                return CreatedAtAction(nameof(GetCourseById), new { id = result.Id }, result);
+            }
+            catch (ArgumentException ex) { return BadRequest(ex.Message); }
+        }
+
+        [HttpGet("courses/{id}")]
+        public async Task<IActionResult> GetCourseById(Guid id)
+        {
+            var result = await _directorService.GetCourseByIdAsync(id);
+            return Ok(result);
+        }
+
+        [HttpPut("courses")]
+        public async Task<IActionResult> UpdateCourse(UpdateCourseDto dto)
+        {
+            try
+            {
+                await _directorService.UpdateCourseAsync(dto);
+                return NoContent();
+            }
+            catch (ArgumentException ex) { return BadRequest(ex.Message); }
+        }
+
+        [HttpDelete("courses/{id}")]
+        public async Task<IActionResult> DeleteCourse(Guid id)
+        {
+            await _directorService.DeleteCourseAsync(id);
+            return NoContent();
         }
     }
 }

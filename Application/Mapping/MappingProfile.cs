@@ -36,6 +36,16 @@ namespace Application.Mapping
             CreateMap<CreateStudentDto, Student>();
             CreateMap<Student, StudentDto>();
             CreateMap<UpdateStudentDto, Student>();
+
+            // Docente
+            CreateMap<CreateTeacherDto, Teacher>();
+            CreateMap<Teacher, TeacherDto>();
+
+            // Curso
+            CreateMap<CreateCourseDto, Course>();
+            CreateMap<Course, CourseDto>()
+                .ForMember(dest => dest.TeacherName, opt => opt.MapFrom(src => $"{src.Teacher.FirstName} {src.Teacher.LastName}"));
+
         }
     }
 }
