@@ -1,4 +1,4 @@
-﻿using Application.DTOs;
+﻿using Shared.DTOs;
 using AutoMapper;
 using Domain.Entities;
 using Domain.Interfaces;
@@ -22,6 +22,11 @@ namespace Application.UseCases.Director
         }
 
         #region Estudiante
+        public async Task<IEnumerable<StudentDto>> GetAllStudentsAsync()
+        {
+            var students = await _unitOfWork.Students.GetAllAsync();
+            return _mapper.Map<IEnumerable<StudentDto>>(students);
+        }
         public async Task<StudentDto> CreateStudentAsync(CreateStudentDto dto)
         {
             var existingStudent = await _unitOfWork.Students.GetByEmailAsync(dto.Email);
@@ -81,6 +86,11 @@ namespace Application.UseCases.Director
         #endregion
 
         #region Docente
+        public async Task<IEnumerable<TeacherDto>> GetAllTeachersAsync()
+        {
+            var teachers = await _unitOfWork.Teachers.GetAllAsync();
+            return _mapper.Map<IEnumerable<TeacherDto>>(teachers);
+        }
         public async Task<TeacherDto> CreateTeacherAsync(CreateTeacherDto dto)
         {
             var existingTeacher = await _unitOfWork.Students.GetByEmailAsync(dto.Email);
@@ -128,6 +138,12 @@ namespace Application.UseCases.Director
         #endregion
 
         #region Curso
+        public async Task<IEnumerable<CourseDto>> GetAllCoursesAsync()
+        {
+            var courses = await _unitOfWork.Courses.GetAllAsync();
+            return _mapper.Map<IEnumerable<CourseDto>>(courses);
+        }
+
         public async Task<CourseDto> CreateCourseAsync(CreateCourseDto dto)
         {
             var teacher = await _unitOfWork.Teachers.GetByIdAsync(dto.TeacherId);
@@ -187,6 +203,11 @@ namespace Application.UseCases.Director
         #endregion
 
         #region Inscripciones
+        public async Task<IEnumerable<EnrollmentDto>> GetAllEnrollmentAsync()
+        {
+            var enrollments = await _unitOfWork.Enrollments.GetAllAsync();
+            return _mapper.Map<IEnumerable<EnrollmentDto>>(enrollments);
+        }
         public async Task<EnrollmentDto> CreateEnrollmentAsync(CreateEnrollmentDto dto)
         {
             var student = await _unitOfWork.Students.GetByIdAsync(dto.StudentId);

@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using Application.DTOs;
+using Shared.DTOs;
 using Domain.Entities;
 using System;
 using System.Collections.Generic;

@@ -1,4 +1,4 @@
-﻿using Application.DTOs;
+﻿using Shared.DTOs;
 using AutoMapper;
 using Domain.Interfaces;
 using System;

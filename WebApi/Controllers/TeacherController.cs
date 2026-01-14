@@ -1,4 +1,4 @@
-﻿using Application.DTOs;
+﻿using Shared.DTOs;
 using Application.UseCases.Teachers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

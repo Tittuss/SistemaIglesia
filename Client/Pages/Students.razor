@@ -1,0 +1,46 @@
+﻿@page "/students"
+@using Shared.DTOs
+@inject HttpClient Http
+
+<h3>Gestión de Estudiantes</h3>
+
+@if (students == null)
+{
+    <p><em>Cargando...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Email</th>
+                <th>Activo</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var student in students)
+            {
+                <tr>
+                    <td>@student.FirstName @student.LastName</td>
+                    <td>@student.Email</td>
+                    <td>@(student.IsActive ? "Sí" : "No")</td>
+                    <td>
+                        <button class="btn btn-primary btn-sm">Editar</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private IEnumerable<StudentDto>? students;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Aquí reutilizamos el DTO que movimos a Shared
+        students = await Http.GetFromJsonAsync<IEnumerable<StudentDto>>("api/director/students");
+    }
+}
