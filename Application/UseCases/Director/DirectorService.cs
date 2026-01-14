@@ -185,5 +185,62 @@ namespace Application.UseCases.Director
             return _mapper.Map<CourseDto>(course);
         }
         #endregion
+
+        #region Inscripciones
+        public async Task<EnrollmentDto> CreateEnrollmentAsync(CreateEnrollmentDto dto)
+        {
+            var student = await _unitOfWork.Students.GetByIdAsync(dto.StudentId);
+            if (student == null) throw new ArgumentException("El estudiante no existe.");
+
+            var course = await _unitOfWork.Courses.GetByIdAsync(dto.CourseId);
+            if (course == null) throw new ArgumentException("El curso no existe.");
+
+            var existingEnrollments = await _unitOfWork.Enrollments.GetByCourseIdAsync(dto.CourseId);
+            if (existingEnrollments.Any(e => e.StudentId == dto.StudentId))
+            {
+                throw new ArgumentException($"El estudiante ya está inscrito en el curso '{course.Name}'.");
+            }
+
+            var enrollment = new Enrollment
+            {
+                Id = Guid.NewGuid(),
+                StudentId = dto.StudentId,
+                CourseId = dto.CourseId,
+                CreatedAt = DateTime.UtcNow,
+                IsActive = true,
+                FinalGrade = 0
+            };
+
+            await _unitOfWork.Enrollments.AddAsync(enrollment);
+            await _unitOfWork.SaveAsync();
+
+            enrollment.Student = student;
+            enrollment.Course = course;
+
+            return _mapper.Map<EnrollmentDto>(enrollment);
+        }
+
+        public async Task DeleteEnrollmentAsync(Guid id)
+        {
+            var enrollment = await _unitOfWork.Enrollments.GetByIdAsync(id);
+            if (enrollment == null) throw new KeyNotFoundException("Inscripción no encontrada.");
+
+            _unitOfWork.Enrollments.Delete(enrollment);
+            await _unitOfWork.SaveAsync();
+        }
+
+        public async Task<EnrollmentDto> GetEnrollmentByIdAsync(Guid id)
+        {
+            var enrollment = await _unitOfWork.Enrollments.GetByIdAsync(id);
+            if (enrollment == null) throw new KeyNotFoundException("Inscripción no encontrada.");
+
+            if (enrollment.Student == null)
+                enrollment.Student = await _unitOfWork.Students.GetByIdAsync(enrollment.StudentId);
+            if (enrollment.Course == null)
+                enrollment.Course = await _unitOfWork.Courses.GetByIdAsync(enrollment.CourseId);
+
+            return _mapper.Map<EnrollmentDto>(enrollment);
+        }
+        #endregion
     }
 }

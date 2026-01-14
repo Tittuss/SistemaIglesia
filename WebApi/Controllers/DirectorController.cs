@@ -128,5 +128,33 @@ namespace WebApi.Controllers
             await _directorService.DeleteCourseAsync(id);
             return NoContent();
         }
+
+        [HttpPost("enrollments")]
+        public async Task<ActionResult<EnrollmentDto>> CreateEnrollment(CreateEnrollmentDto dto)
+        {
+            try
+            {
+                var result = await _directorService.CreateEnrollmentAsync(dto);
+                return CreatedAtAction(nameof(GetEnrollmentById), new { id = result.Id }, result);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet("enrollments/{id}")]
+        public async Task<IActionResult> GetEnrollmentById(Guid id)
+        {
+            var result = await _directorService.GetEnrollmentByIdAsync(id);
+            return Ok(result);
+        }
+
+        [HttpDelete("enrollments/{id}")]
+        public async Task<IActionResult> DeleteEnrollment(Guid id)
+        {
+            await _directorService.DeleteEnrollmentAsync(id);
+            return NoContent();
+        }
     }
 }

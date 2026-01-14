@@ -26,5 +26,10 @@ namespace Application.UseCases.Director
         Task UpdateCourseAsync(UpdateCourseDto dto);
         Task DeleteCourseAsync(Guid id);
         Task<CourseDto> GetCourseByIdAsync(Guid id);
+
+        // Inscripciones
+        Task<EnrollmentDto> CreateEnrollmentAsync(CreateEnrollmentDto dto);
+        Task DeleteEnrollmentAsync(Guid id);
+        Task<EnrollmentDto> GetEnrollmentByIdAsync(Guid id);
     }
 }
