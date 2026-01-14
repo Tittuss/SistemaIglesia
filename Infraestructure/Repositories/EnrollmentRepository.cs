@@ -38,5 +38,13 @@ namespace Infraestructure.Repositories
                 .Where(e => e.StudentId == studentId)
                 .ToListAsync();
         }
+
+        public async Task<IEnumerable<Enrollment>> GetAllWithDetailsAsync()
+        {
+            return await _context.Enrollments
+                .Include(e => e.Student)
+                .Include(e => e.Course)
+                .ToListAsync();
+        }
     }
 }

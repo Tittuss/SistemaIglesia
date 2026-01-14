@@ -1,0 +1,73 @@
+﻿@page "/students/create"
+@page "/students/edit/{Id:guid}"
+@using Client.ViewModels
+@inject IStudentViewModel ViewModel
+
+<h3>@(Id == Guid.Empty ? "Nuevo Estudiante" : "Editar Estudiante")</h3>
+
+@if (ViewModel.IsLoading)
+{
+    <p>Cargando...</p>
+}
+else
+{
+    <EditForm Model="@(Id == Guid.Empty ? ViewModel.NewStudent : ViewModel.EditStudent)" OnValidSubmit="ViewModel.SaveAsync">
+        <DataAnnotationsValidator />
+
+        <div class="mb-3">
+            <label>Nombre</label>
+            @if (Id == Guid.Empty)
+            {
+                <InputText class="form-control" @bind-Value="ViewModel.NewStudent.FirstName" />
+            }
+            else
+            {
+                <InputText class="form-control" @bind-Value="ViewModel.EditStudent.FirstName" />
+            }
+        </div>
+
+        <div class="mb-3">
+            <label>Apellido</label>
+            @if (Id == Guid.Empty)
+            {
+                <InputText class="form-control" @bind-Value="ViewModel.NewStudent.LastName" />
+            }
+            else
+            {
+                <InputText class="form-control" @bind-Value="ViewModel.EditStudent.LastName" />
+            }
+        </div>
+
+        @if (Id == Guid.Empty)
+        {
+            <div class="mb-3">
+                <label>Email</label>
+                <InputText class="form-control" @bind-Value="ViewModel.NewStudent.Email" />
+            </div>
+        }
+        else
+        {
+            <div class="mb-3 form-check">
+                <InputCheckbox class="form-check-input" @bind-Value="ViewModel.EditStudent.IsActive" />
+                <label class="form-check-label">Activo</label>
+            </div>
+        }
+
+        <button type="submit" class="btn btn-success">Guardar</button>
+        <a href="/students" class="btn btn-secondary">Cancelar</a>
+    </EditForm>
+
+    <div class="text-danger">@ViewModel.Message</div>
+}
+
+@code {
+    [Parameter] public Guid Id { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (Id == Guid.Empty)
+            await ViewModel.InitializeCreateAsync();
+        else
+            await ViewModel.InitializeEditAsync(Id);
+    }
+}

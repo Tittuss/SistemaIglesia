@@ -1,0 +1,68 @@
+﻿@page "/teachers/create"
+@page "/teachers/edit/{Id:guid}"
+@using Client.ViewModels
+@inject ITeacherViewModel ViewModel
+
+<h3>@(Id == Guid.Empty ? "Nuevo Docente" : "Editar Docente")</h3>
+
+@if (ViewModel.IsLoading)
+{
+    <p>Cargando...</p>
+}
+else
+{
+    <EditForm Model="@(Id == Guid.Empty ? ViewModel.NewTeacher : ViewModel.EditTeacher)" OnValidSubmit="ViewModel.SaveAsync">
+        <DataAnnotationsValidator />
+
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label>Nombre</label>
+                @if (Id == Guid.Empty)
+                {
+                    <InputText class="form-control" @bind-Value="ViewModel.NewTeacher.FirstName" />
+                }
+                else
+                {
+                    <InputText class="form-control" @bind-Value="ViewModel.EditTeacher.FirstName" />
+                }
+            </div>
+            <div class="col-md-6 mb-3">
+                <label>Apellido</label>
+                @if (Id == Guid.Empty)
+                {
+                    <InputText class="form-control" @bind-Value="ViewModel.NewTeacher.LastName" />
+                }
+                else
+                {
+                    <InputText class="form-control" @bind-Value="ViewModel.EditTeacher.LastName" />
+                }
+            </div>
+        </div>
+
+        @* El Email solo se pide al crear *@
+        @if (Id == Guid.Empty)
+        {
+            <div class="mb-3">
+                <label>Email</label>
+                <InputText class="form-control" @bind-Value="ViewModel.NewTeacher.Email" />
+            </div>
+        }
+
+        <button type="submit" class="btn btn-success">Guardar</button>
+        <a href="/teachers" class="btn btn-secondary">Cancelar</a>
+    </EditForm>
+
+    <div class="text-danger mt-2">@ViewModel.Message</div>
+}
+
+@code {
+    [Parameter] public Guid Id { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (Id == Guid.Empty)
+            await ViewModel.InitializeCreateAsync();
+        else
+            await ViewModel.InitializeEditAsync(Id);
+    }
+}

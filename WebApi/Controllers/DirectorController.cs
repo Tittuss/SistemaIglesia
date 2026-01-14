@@ -1,4 +1,4 @@
-﻿using Application.DTOs;
+﻿using Shared.DTOs;
 using Application.UseCases.Director;
 using Domain.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -13,6 +13,12 @@ namespace WebApi.Controllers
         public DirectorController(IDirectorService directorService)
         {
             _directorService = directorService;
+        }
+
+        [HttpGet("students")]
+        public async Task<IActionResult> GetAllStudents()
+        {
+            return Ok(await _directorService.GetAllStudentsAsync());
         }
 
         [HttpPost("students")]
@@ -64,6 +70,11 @@ namespace WebApi.Controllers
             return Ok(student);
         }
 
+        [HttpGet("teachers")]
+        public async Task<IActionResult> GetAllTeachers()
+        {
+            return Ok(await _directorService.GetAllTeachersAsync());
+        }
 
         [HttpPost("teachers")]
         public async Task<ActionResult<TeacherDto>> CreateTeacher(CreateTeacherDto dto)
@@ -91,6 +102,12 @@ namespace WebApi.Controllers
         {
             await _directorService.DeleteTeacherAsync(id);
             return NoContent();
+        }
+
+        [HttpGet("courses")]
+        public async Task<IActionResult> GetAllCourses()
+        {
+            return Ok(await _directorService.GetAllCoursesAsync());
         }
 
         [HttpPost("courses")]
@@ -127,6 +144,13 @@ namespace WebApi.Controllers
         {
             await _directorService.DeleteCourseAsync(id);
             return NoContent();
+        }
+
+        [HttpGet("enrollments")]
+        public async Task<IActionResult> GetAllEnrollments()
+        {
+            var list = await _directorService.GetAllEnrollmentsAsync();
+            return Ok(list);
         }
 
         [HttpPost("enrollments")]

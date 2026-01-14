@@ -1,0 +1,101 @@
+﻿@page "/courses/create"
+@page "/courses/edit/{Id:guid}"
+@using Client.ViewModels
+@inject ICourseViewModel ViewModel
+
+<h3>@(Id == Guid.Empty ? "Nuevo Curso" : "Editar Curso")</h3>
+
+@if (ViewModel.IsLoading)
+{
+    <p>Cargando...</p>
+}
+else
+{
+    <EditForm Model="@(Id == Guid.Empty ? ViewModel.NewCourse : ViewModel.EditCourse)" OnValidSubmit="ViewModel.SaveAsync">
+        <DataAnnotationsValidator />
+
+        <div class="mb-3">
+            <label>Nombre del Curso</label>
+            @if (Id == Guid.Empty)
+            {
+                <InputText class="form-control" @bind-Value="ViewModel.NewCourse.Name" />
+            }
+            else
+            {
+
+                <InputText class="form-control" @bind-Value="ViewModel.EditCourse.Name" />
+            }
+        </div>
+
+        <div class="mb-3">
+            <label>Descripción</label>
+            @if (Id == Guid.Empty)
+            {
+                <InputTextArea class="form-control" @bind-Value="ViewModel.NewCourse.Description" />
+            }
+            else
+            {
+
+                <InputTextArea class="form-control" @bind-Value="ViewModel.EditCourse.Description" />
+            }
+        </div>
+
+        <div class="mb-3">
+            <label>Profesor Asignado</label>
+            @if (Id == Guid.Empty)
+            {
+                <InputSelect class="form-select" @bind-Value="ViewModel.NewCourse.TeacherId">
+                    <option value="">-- Seleccione un Docente --</option>
+                    @foreach (var teacher in ViewModel.Teachers)
+                    {
+                        <option value="@teacher.Id">@teacher.FirstName @teacher.LastName</option>
+                    }
+                </InputSelect>
+            }
+            else
+            {
+                <InputSelect class="form-select" @bind-Value="ViewModel.EditCourse.TeacherId">
+                    <option value="">-- Seleccione un Docente --</option>
+                    @foreach (var teacher in ViewModel.Teachers)
+                    {
+                        <option value="@teacher.Id">@teacher.FirstName @teacher.LastName</option>
+                    }
+                </InputSelect>
+            }
+        </div>
+
+        @if (Id == Guid.Empty)
+        {
+            <div class="mb-3">
+                <label>ID Periodo Académico (Copia el GUID de SQL aquí)</label>
+                <InputText class="form-control" @bind-Value="PeriodIdString" />
+            </div>
+        }
+
+        <button type="submit" class="btn btn-success">Guardar</button>
+        <a href="/courses" class="btn btn-secondary">Cancelar</a>
+    </EditForm>
+
+    <div class="text-danger">@ViewModel.Message</div>
+}
+
+@code {
+    [Parameter] public Guid Id { get; set; }
+
+    private string PeriodIdString
+    {
+        get => ViewModel.NewCourse.AcademicPeriodId.ToString();
+        set
+        {
+            if (Guid.TryParse(value, out var g)) ViewModel.NewCourse.AcademicPeriodId = g;
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (Id == Guid.Empty)
+            await ViewModel.InitializeCreateAsync();
+        else
+            await ViewModel.InitializeEditAsync(Id);
+    }
+}

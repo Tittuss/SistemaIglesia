@@ -1,0 +1,52 @@
+﻿@page "/enrollments/create"
+@using Client.ViewModels
+@inject IEnrollmentViewModel ViewModel
+
+<h3>Inscribir Estudiante</h3>
+
+@if (ViewModel.IsLoading)
+{
+    <p>Cargando listas...</p>
+}
+else
+{
+    <EditForm Model="@ViewModel.NewEnrollment" OnValidSubmit="ViewModel.SaveAsync">
+        <DataAnnotationsValidator />
+
+        @* DROPDOWN ESTUDIANTE *@
+        <div class="mb-3">
+            <label>Seleccionar Estudiante</label>
+            <InputSelect class="form-select" @bind-Value="ViewModel.NewEnrollment.StudentId">
+                <option value="">-- Seleccione Alumno --</option>
+                @foreach (var student in ViewModel.StudentsList)
+                {
+                    <option value="@student.Id">@student.FirstName @student.LastName (@student.Email)</option>
+                }
+            </InputSelect>
+        </div>
+
+        @* DROPDOWN CURSO *@
+        <div class="mb-3">
+            <label>Seleccionar Curso</label>
+            <InputSelect class="form-select" @bind-Value="ViewModel.NewEnrollment.CourseId">
+                <option value="">-- Seleccione Curso --</option>
+                @foreach (var course in ViewModel.CoursesList)
+                {
+                    <option value="@course.Id">@course.Name (Prof: @course.TeacherName)</option>
+                }
+            </InputSelect>
+        </div>
+
+        <button type="submit" class="btn btn-success">Inscribir</button>
+        <a href="/enrollments" class="btn btn-secondary">Cancelar</a>
+    </EditForm>
+    
+    <div class="text-danger mt-3">@ViewModel.Message</div>
+}
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        await ViewModel.InitializeCreateAsync();
+    }
+}

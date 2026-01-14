@@ -32,5 +32,13 @@ namespace Infraestructure.Repositories
                 .ThenInclude(e => e.Student)
                 .FirstOrDefaultAsync(c => c.Id == courseId);
         }
+
+        public async Task<IEnumerable<Course>> GetAllWithDetailsAsync()
+        {
+            return await _context.Courses
+                .Include(c => c.Teacher)
+                .Include(c => c.AcademicPeriod)
+                .ToListAsync();
+        }
     }
 }
