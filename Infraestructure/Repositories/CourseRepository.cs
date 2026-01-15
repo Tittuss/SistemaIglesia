@@ -19,6 +19,8 @@ namespace Infraestructure.Repositories
         public Task<IEnumerable<Course>> GetCoursesByTeacherIdAsync(Guid teacherId)
         {
             return _context.Courses
+                .Include(c => c.AcademicPeriod)
+                .Include(c => c.Enrollments)
                 .Where(c => c.TeacherId == teacherId)
                 .ToListAsync()
                 .ContinueWith(t => (IEnumerable<Course>)t.Result);

@@ -1,0 +1,120 @@
+﻿@page "/grade-course/{CourseId:guid}"
+@using Client.Services
+@using global::Shared.DTOs
+@inject ITeacherPortalService PortalService
+@inject FakeAuthService Auth
+@inject NavigationManager Nav
+
+<div class="container mt-4">
+    <div class="mb-3">
+        <a href="/my-courses" class="btn btn-link text-decoration-none text-secondary">
+            <i class="oi oi-arrow-left"></i> Volver a mis cursos
+        </a>
+    </div>
+
+    <h3 class="text mb-4">Calificar Estudiantes</h3>
+
+    @if (students == null)
+    {
+        <div class="text-center"><div class="spinner-border text-primary"></div></div>
+    }
+    else if (!students.Any())
+    {
+        <div class="alert alert-warning">No hay estudiantes inscritos en este curso.</div>
+    }
+    else
+    {
+        <div class="card shadow border-0">
+            <div class="card-body p-0">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="bg-light">
+                        <tr>
+                            <th class="ps-4">Estudiante</th>
+                            <th>Email</th>
+                            <th style="width: 200px;">Calificación (0-100)</th>
+                            <th style="width: 150px;">Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var s in students)
+                        {
+                            <tr>
+                                <td class="ps-4 fw-bold">@s.FullName</td>
+                                <td class="text-muted small">@s.Email</td>
+                                <td>
+                                    <input type="number" class="form-control"
+                                           @bind="s.CurrentGrade"
+                                           min="0" max="100" />
+                                </td>
+                                <td>
+                                    <button class="btn btn-primary btn-sm"
+                                            @onclick="() => SaveGrade(s)">
+                                        <i class="oi oi-check"></i> Guardar
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+
+    @if (!string.IsNullOrEmpty(message))
+    {
+        <div class="toast-container position-fixed bottom-0 end-0 p-3">
+            <div class="toast show align-items-center text-white bg-primary border-0" role="alert">
+                <div class="d-flex">
+                    <div class="toast-body">@message</div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" @onclick="() => message = null"></button>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter] public Guid CourseId { get; set; }
+    private List<StudentGradeDto>? students;
+    private string? message;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (Auth.CurrentRole != "Teacher") { Nav.NavigateTo("/login"); return; }
+
+        var list = await PortalService.GetStudentsByCourseAsync(CourseId);
+        students = list.ToList();
+    }
+
+    private async Task SaveGrade(StudentGradeDto student)
+    {
+        if (student.CurrentGrade < 0 || student.CurrentGrade > 100)
+        {
+            return;
+        }
+
+        var updateDto = new UpdateGradeDto
+        {
+            CourseId = this.CourseId,
+            StudentId = student.StudentId,
+            NewGrade = student.CurrentGrade ?? 0
+        };
+
+        try
+        {
+            await PortalService.UpdateGradeAsync(updateDto);
+            ShowMessage($"Nota de {student.FullName} actualizada.");
+        }
+        catch (Exception)
+        {
+            ShowMessage("Error al guardar la nota.");
+        }
+    }
+
+    private void ShowMessage(string msg)
+    {
+        message = msg;
+        StateHasChanged();
+        Task.Delay(3000).ContinueWith(_ => { message = null; InvokeAsync(StateHasChanged); });
+    }
+}

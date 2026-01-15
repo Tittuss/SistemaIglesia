@@ -33,10 +33,12 @@ namespace Infraestructure.Repositories
         public async Task<IEnumerable<Enrollment>> GetByStudentIdAsync(Guid studentId)
         {
             return await _context.Enrollments
-                .Include(e => e.Course)
-                .ThenInclude(c => c!.Teacher)
-                .Where(e => e.StudentId == studentId)
-                .ToListAsync();
+        .Include(e => e.Course)
+            .ThenInclude(c => c.Teacher) // Cargar Profesor del curso
+        .Include(e => e.Course)
+            .ThenInclude(c => c.AcademicPeriod) // Cargar Periodo del curso
+        .Where(e => e.StudentId == studentId)
+        .ToListAsync();
         }
 
         public async Task<IEnumerable<Enrollment>> GetAllWithDetailsAsync()
@@ -44,6 +46,15 @@ namespace Infraestructure.Repositories
             return await _context.Enrollments
                 .Include(e => e.Student)
                 .Include(e => e.Course)
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<Enrollment>> GetByStudentIdWithDetailsAsync(Guid studentId)
+        {
+            return await _context.Enrollments
+                .Where(e => e.StudentId == studentId)
+                .Include(e => e.Course)
+                .ThenInclude(c => c.Teacher)
                 .ToListAsync();
         }
     }

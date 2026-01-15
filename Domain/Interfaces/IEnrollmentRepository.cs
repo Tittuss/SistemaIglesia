@@ -18,5 +18,6 @@ namespace Domain.Interfaces
         // Validar si ya existe una inscripción (Evitar duplicados)
         Task<bool> ExistsAsync(Guid studentId, Guid courseId);
         Task<IEnumerable<Enrollment>> GetAllWithDetailsAsync();
+        Task<IEnumerable<Enrollment>> GetByStudentIdWithDetailsAsync(Guid studentId);
     }
 }

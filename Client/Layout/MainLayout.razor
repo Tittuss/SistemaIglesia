@@ -1,16 +1,46 @@
 ﻿@inherits LayoutComponentBase
+@using Client.Services
+@inject FakeAuthService Auth
+@implements IDisposable
+@inject NavigationManager Nav
+
 <div class="page">
-    <div class="sidebar">
-        <NavMenu />
-    </div>
+    @if (Auth.IsLoggedIn)
+    {
+        <div class="sidebar">
+            <NavMenu />
+        </div>
+    }
 
     <main>
-        <div class="top-row px-4">
-            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
-        </div>
+        @if (Auth.IsLoggedIn)
+        {
+            <div class="top-row px-4">
+                <span class="me-auto text-dark fw-bold">Hola, @Auth.CurrentUserName (@Auth.CurrentRole)</span>
+                <button class="btn btn-link text-danger" @onclick="Logout">Salir</button>
+            </div>
+        }
 
         <article class="content px-4">
             @Body
         </article>
     </main>
 </div>
+
+@code {
+    protected override void OnInitialized()
+    {
+        Auth.OnChange += StateHasChanged;
+    }
+
+    public void Dispose()
+    {
+        Auth.OnChange -= StateHasChanged;
+    }
+
+    private void Logout()
+    {
+        Auth.Logout();
+        Nav.NavigateTo("/login");
+    }
+}

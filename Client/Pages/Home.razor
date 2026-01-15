@@ -1,54 +1,220 @@
 ﻿@page "/"
+@using Client.Services
+@using global::Shared.DTOs
+@inject FakeAuthService Auth
+@inject NavigationManager Nav
 
-<PageTitle>Panel Director</PageTitle>
+@inject IStudentService StudentService
+@inject ITeacherService TeacherService
+@inject ICourseService CourseService
+@inject IEnrollmentService EnrollmentService
 
-<div class="text-center mb-5">
-    <h1 class="display-4">Panel de Administración</h1>
-    <p class="lead">Bienvenido al sistema de gestión académica.</p>
-</div>
+@if (!Auth.IsLoggedIn)
+{
+    <div class="text-center mt-5">Redirigiendo...</div>
+}
+else
+{
+    <PageTitle>Panel General</PageTitle>
 
-<div class="row">
-    <div class="col-md-3 mb-4">
-        <div class="card h-100 border-primary text-center">
-            <div class="card-body">
-                <h3 class="card-title text-primary"><span class="oi oi-people"></span></h3>
-                <h5 class="card-title">Estudiantes</h5>
-                <p class="card-text">Registrar, editar y gestionar alumnos de la iglesia.</p>
-                <a href="students" class="btn btn-outline-primary stretched-link">Gestionar</a>
+    <div class="container-fluid mt-4">
+
+        <div class="d-flex justify-content-between align-items-center mb-5">
+            <div>
+                <h2 class="fw-bold text-dark">Panel General</h2>
+                <p class="text-muted">Resumen de la actividad académica en tiempo real.</p>
+            </div>
+            <div class="text-end">
+                <span class="badge bg-light text-dark border p-2">
+                    <i class="oi oi-calendar me-1"></i> @DateTime.Now.ToShortDateString()
+                </span>
             </div>
         </div>
+
+        @if (isLoading)
+        {
+            <div class="d-flex justify-content-center py-5">
+                <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status"></div>
+            </div>
+        }
+        else
+        {
+            <div class="row g-4">
+
+                <div class="col-md-3">
+                    <div class="card shadow-sm border-0 h-100 kpi-card border-start-primary">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="text-uppercase text-muted fw-bold small">Estudiantes</h6>
+                                    <h2 class="display-5 fw-bold text-primary mb-0">@totalStudents</h2>
+                                </div>
+                                <div class="icon-box bg-primary-subtle text-primary">
+                                    <i class="oi oi-people fs-3"></i>
+                                </div>
+                            </div>
+                            <small class="text-muted mt-3 d-block">Registrados en el sistema</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="card shadow-sm border-0 h-100 kpi-card border-start-success">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="text-uppercase text-muted fw-bold small">Docentes</h6>
+                                    <h2 class="display-5 fw-bold text-success mb-0">@totalTeachers</h2>
+                                </div>
+                                <div class="icon-box bg-success-subtle text-success">
+                                    <i class="oi oi-briefcase fs-3"></i>
+                                </div>
+                            </div>
+                            <small class="text-muted mt-3 d-block">Activos impartiendo clases</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="card shadow-sm border-0 h-100 kpi-card border-start-warning">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="text-uppercase text-muted fw-bold small">Cursos</h6>
+                                    <h2 class="display-5 fw-bold text-warning mb-0">@totalCourses</h2>
+                                </div>
+                                <div class="icon-box bg-warning-subtle text-warning">
+                                    <i class="oi oi-book fs-3"></i>
+                                </div>
+                            </div>
+                            <small class="text-muted mt-3 d-block">Materias disponibles</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="card shadow-sm border-0 h-100 kpi-card border-start-info">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="text-uppercase text-muted fw-bold small">Inscripciones</h6>
+                                    <h2 class="display-5 fw-bold text-info mb-0">@totalEnrollments</h2>
+                                </div>
+                                <div class="icon-box bg-info-subtle text-info">
+                                    <i class="oi oi-list-rich fs-3"></i>
+                                </div>
+                            </div>
+                            <small class="text-muted mt-3 d-block">Matrículas realizadas</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            
+        }
     </div>
 
-    <div class="col-md-3 mb-4">
-        <div class="card h-100 border-success text-center">
-            <div class="card-body">
-                <h3 class="card-title text-success"><span class="oi oi-briefcase"></span></h3>
-                <h5 class="card-title">Docentes</h5>
-                <p class="card-text">Gestionar el personal docente y sus datos.</p>
-                <a href="teachers" class="btn btn-outline-success stretched-link">Gestionar</a>
-            </div>
-        </div>
-    </div>
+    <style>
+        /* Estilos específicos para las tarjetas KPI */
+        .icon-box {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
 
-    <div class="col-md-3 mb-4">
-        <div class="card h-100 border-warning text-center">
-            <div class="card-body">
-                <h3 class="card-title text-warning"><span class="oi oi-book"></span></h3>
-                <h5 class="card-title">Cursos</h5>
-                <p class="card-text">Crear cursos y asignar profesores responsables.</p>
-                <a href="courses" class="btn btn-outline-warning stretched-link">Gestionar</a>
-            </div>
-        </div>
-    </div>
+        .bg-primary-subtle {
+            background-color: #cfe2ff;
+        }
 
-    <div class="col-md-3 mb-4">
-        <div class="card h-100 border-danger text-center">
-            <div class="card-body">
-                <h3 class="card-title text-danger"><span class="oi oi-list-rich"></span></h3>
-                <h5 class="card-title">Inscripciones</h5>
-                <p class="card-text">Matricular alumnos en cursos activos.</p>
-                <a href="enrollments" class="btn btn-outline-danger stretched-link">Gestionar</a>
-            </div>
-        </div>
-    </div>
-</div>
+        .bg-success-subtle {
+            background-color: #d1e7dd;
+        }
+
+        .bg-warning-subtle {
+            background-color: #fff3cd;
+        }
+
+        .bg-info-subtle {
+            background-color: #cff4fc;
+        }
+
+        .kpi-card {
+            transition: transform 0.2s;
+        }
+
+            .kpi-card:hover {
+                transform: translateY(-5px);
+            }
+
+        /* Bordes de color izquierdo para identificar rápido */
+        .border-start-primary {
+            border-left: 4px solid #0d6efd !important;
+        }
+
+        .border-start-success {
+            border-left: 4px solid #198754 !important;
+        }
+
+        .border-start-warning {
+            border-left: 4px solid #ffc107 !important;
+        }
+
+        .border-start-info {
+            border-left: 4px solid #0dcaf0 !important;
+        }
+    </style>
+}
+
+@code {
+    private int totalStudents = 0;
+    private int totalTeachers = 0;
+    private int totalCourses = 0;
+    private int totalEnrollments = 0;
+    private bool isLoading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!Auth.IsLoggedIn)
+        {
+            Nav.NavigateTo("/login");
+            return;
+        }
+
+        // Solo el Director debería ver todas las estadísticas globales
+        // Si entra un alumno o profe, podríamos mostrarle solo sus datos,
+        // pero por ahora asumimos que este Home es el del Director.
+        if (Auth.CurrentRole == "Director")
+        {
+            try
+            {
+                // Carga en paralelo para velocidad
+                var t1 = StudentService.GetAllStudentsAsync();
+                var t2 = TeacherService.GetAllTeachersAsync();
+                var t3 = CourseService.GetAllCoursesAsync();
+                var t4 = EnrollmentService.GetAllEnrollmentsAsync();
+
+                await Task.WhenAll(t1, t2, t3, t4);
+
+                totalStudents = t1.Result.Count();
+                totalTeachers = t2.Result.Count();
+                totalCourses = t3.Result.Count();
+                totalEnrollments = t4.Result.Count();
+            }
+            catch (Exception)
+            {
+                // Manejar error silenciosamente o mostrar toast
+            }
+            finally
+            {
+                isLoading = false;
+            }
+        }
+        else
+        {
+            isLoading = false;
+        }
+    }
+}
