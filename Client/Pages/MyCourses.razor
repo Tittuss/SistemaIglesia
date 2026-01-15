@@ -1,0 +1,58 @@
+﻿@page "/my-courses"
+@using Client.Services
+@using global::Shared.DTOs
+@inject ITeacherPortalService PortalService
+@inject FakeAuthService Auth
+@inject NavigationManager Nav
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="text"><i class="oi oi-briefcase"></i> Mis Cursos</h2>
+            <p class="text-muted">Docente: <strong>@Auth.CurrentUserName</strong></p>
+        </div>
+    </div>
+
+    @if (courses == null)
+    {
+        <div class="text-center"><div class="spinner-border text-primary"></div></div>
+    }
+    else if (!courses.Any())
+    {
+        <div class="alert alert-info">No tienes cursos asignados.</div>
+    }
+    else
+    {
+        <div class="row">
+            @foreach (var c in courses)
+            {
+                <div class="col-md-4 mb-4">
+                    <div class="card shadow-sm border-0 h-100">
+                        <div class="card-body">
+                            <h5 class="card-title fw-bold text-primary">@c.Name</h5>
+                            <span class="badge bg-secondary mb-2">@c.Period</span>
+                            <p class="card-text text-muted mt-2">
+                                <i class="oi oi-people"></i> @c.EnrolledStudentsCount alumnos
+                            </p>
+                        </div>
+                        <div class="card-footer bg-white border-top-0">
+                            <a href="/grade-course/@c.Id" class="btn btn-outline-primary w-100">
+                                <i class="oi oi-pencil"></i> Gestionar Notas
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    private IEnumerable<CourseSimpleDto>? courses;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (Auth.CurrentRole != "Teacher") { Nav.NavigateTo("/login"); return; }
+        courses = await PortalService.GetMyCoursesAsync(Auth.CurrentUserId);
+    }
+}

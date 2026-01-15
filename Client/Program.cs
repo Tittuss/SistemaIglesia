@@ -17,6 +17,9 @@ builder.Services.AddScoped<ICourseService, CourseService>();
 builder.Services.AddScoped<ICourseViewModel, CourseViewModel>();
 builder.Services.AddScoped<IEnrollmentService, EnrollmentService>();
 builder.Services.AddScoped<IEnrollmentViewModel, EnrollmentViewModel>();
+builder.Services.AddScoped<IStudentPortalService, StudentPortalService>();
+builder.Services.AddScoped<ITeacherPortalService, TeacherPortalService>();
+builder.Services.AddSingleton<FakeAuthService>();
 
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("http://localhost:5144") });
 

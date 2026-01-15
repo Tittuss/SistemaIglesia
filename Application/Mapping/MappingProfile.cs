@@ -13,13 +13,15 @@ namespace Application.Mapping
     {
         public MappingProfile()
         {
+            
             // Mapeo: Inscripción->Vista Estudiante(Curso + Nota)
             CreateMap<Enrollment, CourseGradeDto>()
                 .ForMember(dest => dest.CourseName, opt => opt.MapFrom(src => src.Course!.Name))
                 .ForMember(dest => dest.Period, opt => opt.MapFrom(src => src.Course!.AcademicPeriod!.Name))
                 .ForMember(dest => dest.TeacherName, opt => opt.MapFrom(src =>
-                    $"{src.Course!.Teacher!.FirstName} {src.Course!.Teacher!.LastName}"));
-
+                    src.Course.Teacher != null
+                    ? $"{src.Course.Teacher.FirstName} {src.Course.Teacher.LastName}"
+                    : "Sin Docente"));
             // Mapeo: Curso -> Vista Docente (Lista de Cursos)
             CreateMap<Course, CourseSimpleDto>()
                 .ForMember(dest => dest.Period, opt => opt.MapFrom(src => src.AcademicPeriod!.Name))

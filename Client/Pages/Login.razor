@@ -1,0 +1,119 @@
+﻿@page "/login"
+@layout Client.Shared.LoginLayout
+
+@using Client.Services
+@using global::Shared.DTOs
+@inject FakeAuthService Auth
+@inject NavigationManager Nav
+@inject IStudentService StudentService
+@inject ITeacherService TeacherService
+
+<div class="card shadow-lg border-0" style="width: 100%; max-width: 400px; border-radius: 12px;">
+    <div class="card-body p-5">
+
+        <div class="text-center mb-5">
+            <h2 class="fw-bold text-primary mb-0">Sistema Iglesia</h2>
+            <small class="text-muted text-uppercase fw-bold" style="letter-spacing: 1px;">Gestión Académica</small>
+        </div>
+
+        <EditForm Model="@this" OnValidSubmit="HandleLogin">
+
+            <div class="mb-3">
+                <label class="form-label fw-bold text-secondary small">Correo Electrónico</label>
+                <input type="email" class="form-control form-control-lg bg-light border-0"
+                       placeholder="nombre@ejemplo.com"
+                       @bind="email"
+                       required />
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label fw-bold text-secondary small">Contraseña</label>
+                <input type="password" class="form-control form-control-lg bg-light border-0"
+                       placeholder="••••••••"
+                       @bind="password"
+                       required />
+            </div>
+
+            @if (!string.IsNullOrEmpty(errorMessage))
+            {
+                <div class="alert alert-danger d-flex align-items-center py-2" role="alert">
+                    <i class="oi oi-warning me-2"></i>
+                    <span class="small">@errorMessage</span>
+                </div>
+            }
+
+            <div class="d-grid gap-2 mt-4">
+                <button type="submit" class="btn btn-primary btn-lg fw-bold" disabled="@isLoading" style="border-radius: 8px;">
+                    @if (isLoading)
+                    {
+                        <span class="spinner-border spinner-border-sm me-2"></span>
+                    }
+                    Ingresar
+                </button>
+            </div>
+
+        </EditForm>
+    </div>
+</div>
+
+@code {
+    private string email = "";
+    private string password = "";
+    private string errorMessage = "";
+    private bool isLoading = false;
+
+    private const string DirectorEmail = "director@iglesia.com";
+    private const string GlobalPassword = "IglesiaSistema";
+
+    private async Task HandleLogin()
+    {
+        isLoading = true;
+        errorMessage = "";
+        await Task.Delay(500);
+
+        try
+        {
+            if (password != GlobalPassword)
+            {
+                errorMessage = "Credenciales incorrectas.";
+                return;
+            }
+
+            // Lógica de roles
+            if (email.Equals(DirectorEmail, StringComparison.OrdinalIgnoreCase))
+            {
+                Auth.Login(Guid.Empty, "Director General", "Director");
+                Nav.NavigateTo("/");
+                return;
+            }
+
+            var students = await StudentService.GetAllStudentsAsync();
+            var student = students.FirstOrDefault(s => s.Email.Equals(email, StringComparison.OrdinalIgnoreCase));
+            if (student != null)
+            {
+                Auth.Login(student.Id, $"{student.FirstName} {student.LastName}", "Student");
+                Nav.NavigateTo("/my-grades");
+                return;
+            }
+
+            var teachers = await TeacherService.GetAllTeachersAsync();
+            var teacher = teachers.FirstOrDefault(t => t.Email.Equals(email, StringComparison.OrdinalIgnoreCase));
+            if (teacher != null)
+            {
+                Auth.Login(teacher.Id, $"{teacher.FirstName} {teacher.LastName}", "Teacher");
+                Nav.NavigateTo("/my-courses");
+                return;
+            }
+
+            errorMessage = "El usuario no fue encontrado.";
+        }
+        catch (Exception ex)
+        {
+            errorMessage = "Error: " + ex.Message;
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+}
